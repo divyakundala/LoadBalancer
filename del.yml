@@ -1,0 +1,19 @@
+--- 
+- 
+  become: true
+  connection: local
+  gather_facts: false
+  hosts: localhost
+  vars:
+    ansible_become_pass: '{{password}}'
+
+  tasks: 
+  - name: Stop Container 
+    command: "docker stop {{container}}"
+    become: yes
+    ignore_errors: yes
+
+  - name: Remove Container
+    command: "docker rm {{container}}"
+    become: yes
+    ignore_errors: yes
