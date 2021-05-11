@@ -4,6 +4,7 @@ MAINTAINER divya kundala
 
 RUN apt-get update
 RUN apt-get -y --force-yes install iproute2
+RUN apt-get -y --force-yes install curl
 RUN apt-get -y --force-yes install telnet
 RUN apt-get -y --force-yes install openssh-server
 RUN apt-get -y --force-yes install iptables
