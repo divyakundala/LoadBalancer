@@ -8,12 +8,12 @@
     ansible_become_pass: '{{password}}'
 
   tasks: 
-  - name: Stop Container 
+  - name: "Stop Container '{{container}}'"
     command: "docker stop {{container}}"
     become: yes
     ignore_errors: yes
 
-  - name: Remove Container
+  - name: "Remove Container '{{container}}'"
     command: "docker rm {{container}}"
     become: yes
     ignore_errors: yes

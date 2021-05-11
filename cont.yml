@@ -9,5 +9,5 @@
     
   tasks: 
     - 
-      command: "docker run --privileged -itd --name='{{container}}' ubuntu"
-      name: "Create containers"
+      command: "docker run --privileged -itd --name='{{container}}' doc1:1.0"
+      name: "Create container '{{container}}'"

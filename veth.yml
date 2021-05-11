@@ -1,0 +1,50 @@
+--- 
+- 
+  become: true
+  connection: local
+  gather_facts: false
+  hosts: localhost
+  vars:
+    ansible_become_pass: '{{password}}'
+  
+  tasks:
+    -
+      name: Create veth pair
+      shell: "ip link add '{{veth1}}' type veth peer name '{{veth2}}'"
+      ignore_errors: yes
+    -
+      name: Fetch the pid of the container 1
+      shell: "docker inspect -f {%raw%}'{{.State.Pid}}'{%endraw%} {{ container1 }}"
+      register: pid1
+      become: yes
+      ignore_errors: yes
+
+    -
+      name: Add veth1 to container 1
+      shell: 'ip link set dev {{ veth1 }} netns {{ pid1.stdout }}'
+      become: yes
+      ignore_errors: yes
+
+    -
+      name: Turn veth1 up
+      shell: 'docker exec --privileged {{ container1 }} ip link set dev {{ veth1 }} up'
+      become: yes
+      ignore_errors: yes
+    -
+      name: Fetch the pid of the container 2
+      shell: "docker inspect -f {%raw%}'{{.State.Pid}}'{%endraw%} {{ container2 }}"
+      register: pid2
+      become: yes
+      ignore_errors: yes
+
+    -
+      name: Add veth2 to container 2
+      shell: 'ip link set dev {{ veth2 }} netns {{ pid2.stdout }}'
+      become: yes
+      ignore_errors: yes
+
+    -
+      name: Turn veth2 up
+      shell: 'docker exec --privileged {{ container2 }} ip link set dev {{ veth2 }} up'
+      become: yes
+      ignore_errors: yes

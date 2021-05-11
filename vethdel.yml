@@ -1,0 +1,15 @@
+--- 
+- 
+  become: true
+  connection: local
+  gather_facts: false
+  hosts: localhost
+  vars:
+    ansible_become_pass: '{{password}}'
+  
+  tasks:
+    -
+      name: "deleteveth pair '{{veth1}}'"
+      shell: "ip link delete '{{veth1}}'"
+      ignore_errors: yes
+      
