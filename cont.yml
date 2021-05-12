@@ -11,3 +11,15 @@
     - 
       command: "docker run --privileged -itd --name='{{container}}' doc1:1.0"
       name: "Create container '{{container}}'"
+      
+    -
+      name: install ssh service
+      shell: 'docker exec --privileged {{ container }} apt install -y ssh'
+      become: yes
+      ignore_errors: yes
+      
+    -
+      name: starting ssh service
+      shell: 'docker exec --privileged {{ container }} service ssh start'
+      become: yes
+      ignore_errors: yes
