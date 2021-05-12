@@ -1,0 +1,22 @@
+--- 
+- 
+  become: true
+  connection: local
+  gather_facts: false
+  hosts: localhost
+  vars:
+    ansible_become_pass: '{{password}}'
+  
+  tasks:
+      
+    -
+      name: Update {{ container }}
+      shell: 'docker exec --privileged {{ container }} apt update'
+      become: yes
+      ignore_errors: yes
+
+    -
+      name: Install haproxy in {{ container }}
+      shell: 'docker exec --privileged {{ container }} apt install -y haproxy'
+      become: yes
+      ignore_errors: yes

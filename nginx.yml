@@ -1,0 +1,27 @@
+--- 
+- 
+  become: true
+  connection: local
+  gather_facts: false
+  hosts: localhost
+  vars:
+    ansible_become_pass: '{{password}}'
+  
+  tasks:
+    -
+      name: Update {{ container }}
+      shell: 'docker exec --privileged {{ container }} apt update'
+      become: yes
+      ignore_errors: yes
+
+    -
+      name: Install nginx in {{ container }}
+      shell: 'docker exec --privileged {{ container }} apt install -y nginx'
+      become: yes
+      ignore_errors: yes
+      
+    -
+      name: Start nginx in {{ container }}
+      shell: 'docker exec --privileged {{ container }} service nginx start'
+      become: yes
+      ignore_errors: yes

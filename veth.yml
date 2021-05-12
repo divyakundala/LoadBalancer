@@ -30,6 +30,13 @@
       shell: 'docker exec --privileged {{ container1 }} ip link set dev {{ veth1 }} up'
       become: yes
       ignore_errors: yes
+
+    -
+      name: Add IP address to veth1
+      shell: 'docker exec --privileged {{ container1 }} ip addr add 192.168.{{ ip }}.1/24 dev {{ veth1 }}'
+      become: yes
+      ignore_errors: yes
+
     -
       name: Fetch the pid of the container 2
       shell: "docker inspect -f {%raw%}'{{.State.Pid}}'{%endraw%} {{ container2 }}"
@@ -46,5 +53,11 @@
     -
       name: Turn veth2 up
       shell: 'docker exec --privileged {{ container2 }} ip link set dev {{ veth2 }} up'
+      become: yes
+      ignore_errors: yes
+
+    -
+      name: Add IP address to veth2
+      shell: 'docker exec --privileged {{ container2 }} ip addr add 192.168.{{ ip }}.2/24 dev {{ veth2 }}'
       become: yes
       ignore_errors: yes

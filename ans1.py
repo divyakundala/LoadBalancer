@@ -12,13 +12,21 @@ def delete_container(container_name, password):
     command = "ansible-playbook -i hosts del.yml -e container=" + container_name + " -e password=" + password
     subprocess.call([command],shell=True)
 
-def create_vethpair(c, password):
-    command="ansible-playbook -i hosts veth.yml -e veth1=" + c[1] + " -e veth2="+ c[2] + " -e container1=" + c[0][0] + " -e container2=" + c[0][1] + " -e password=" + password  
+def create_vethpair(c, ip, password):
+    command="ansible-playbook -i hosts veth.yml -e veth1=" + c[1] + " -e veth2="+ c[2] + " -e container1=" + c[0][0] + " -e container2=" + c[0][1] + " -e ip=" + ip + " -e password=" + password  
     subprocess.call([command],shell=True) 
     
-def delete_vethpair(veth1, password):
-    command="ansible-playbook -i hosts vethdel.yml -e veth1=" + veth1 + " -e password=" + password  
+# def delete_vethpair(veth1, password):
+#     command="ansible-playbook -i hosts vethdel.yml -e veth1=" + veth1 + " -e password=" + password  
+#     subprocess.call([command],shell=True)    
+
+def run_nginx(container, password):
+    command="ansible-playbook -i hosts nginx.yml -e container=" + container + " -e password=" + password  
     subprocess.call([command],shell=True)    
+
+def run_haproxy(container, password):
+    command="ansible-playbook -i hosts haproxy.yml -e container=" + container + " -e password=" + password  
+    subprocess.call([command],shell=True)  
     
 if __name__ == '__main__':
     n = len(sys.argv)
@@ -38,15 +46,24 @@ if __name__ == '__main__':
                        conn.append([(header[row_num], header[col]), header[row_num] + header[col], header[col] + header[row_num]])
                row_num +=1    
 
-    print(conn)
+    
     if a == "create":
         # create containers
         for container in header:
             create_container(container, password)
         
         # create veth pairs
+        ip = 0
         for c in conn:
-            create_vethpair(c, password)
+            create_vethpair(c, str(ip), password)
+            ip+=1
+            
+        # run nginx in Servers and Haproxy in gateway
+        for container in header:
+            if container.startswith("S"):
+                run_nginx(container, password)
+            elif container.startswith("G"):
+                run_haproxy(container, password)    
             
     elif a == "delete":
         # delete containers
@@ -54,5 +71,5 @@ if __name__ == '__main__':
             delete_container(container, password)
             
         # delete veth pairs
-        for c in conn:
-            delete_vethpair(c[1], password)
+        # for c in conn:
+        #     delete_vethpair(c[1], password)
