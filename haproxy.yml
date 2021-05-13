@@ -20,3 +20,52 @@
       shell: 'docker exec --privileged {{ container }} apt install -y haproxy'
       become: yes
       ignore_errors: yes
+    
+    -
+      name: Install rsyslog in {{ container }}
+      shell: 'docker exec --privileged {{ container }} apt install -y rsyslog'
+      become: yes
+      ignore_errors: yes
+      
+    -
+      name: Change dgram qlen in {{ container }}
+      shell: 'docker exec --privileged {{ container }} sysctl -w net.unix.max_dgram_qlen=100'
+      become: yes
+      ignore_errors: yes
+      
+    -
+      name: Start rsyslog in {{ container }}
+      shell: 'docker exec --privileged {{ container }} service rsyslog start'
+      become: yes
+      ignore_errors: yes
+     
+    -
+      name: Create virtual interface in {{ container }}
+      shell: 'docker exec --privileged {{ container }} ip link add name lb type dummy'
+      become: yes
+      ignore_errors: yes
+     
+    -
+      name: Turn virtual interface up in {{ container }}
+      shell: 'docker exec --privileged {{ container }} ip link set dev lb up'
+      become: yes
+      ignore_errors: yes
+      
+    -
+      name: Set virtual interface IP address in {{ container }}
+      shell: 'docker exec --privileged {{ container }} ip addr ad {{ ip }} dev lb'
+      become: yes
+      ignore_errors: yes
+      
+    -
+      name: Copy haproxy.cfg
+      shell: 'docker cp "templates/haproxy.cfg" {{ container }}:"/etc/haproxy/haproxy.cfg"'
+      become: yes
+      ignore_errors: yes
+      
+    -
+      name: Service haproxy start
+      shell: 'docker exec --privileged {{ container }} service haproxy start'
+      become: yes
+      ignore_errors: yes
+

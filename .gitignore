@@ -1,1 +1,5 @@
 artifacts/
+sshkey
+sshkey.pub
+templates/haproxy.cfg
+templates/index.html

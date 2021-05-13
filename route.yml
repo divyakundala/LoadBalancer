@@ -1,0 +1,19 @@
+--- 
+- 
+  become: true
+  connection: local
+  gather_facts: false
+  hosts: localhost
+  vars:
+    ansible_become_pass: '{{password}}'
+    
+  tasks: 
+    - name: Delete the default route via 172.17.0.1
+      shell: 'docker exec --privileged {{ container }} ip route del default via 172.17.0.1'
+      become: yes
+      ignore_errors: yes
+
+    - name: Add default route
+      shell: 'docker exec --privileged {{ container }} ip route add default via {{ default_ip }}'
+      become: yes
+      ignore_errors: yes

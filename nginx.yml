@@ -25,3 +25,30 @@
       shell: 'docker exec --privileged {{ container }} service nginx start'
       become: yes
       ignore_errors: yes
+      
+    -
+      name: Remove index*.html file from /var/www
+      shell: 'docker exec --privileged {{ container }} rm -rf /var/www/html/index.nginx-debian.html'
+      become: yes
+      ignore_errors: yes
+      
+    -
+      name: copy template index.html.j2 to index.html
+      template:
+        src: 'templates/index.html.j2'
+        dest: 'templates/index.html'
+      become: yes
+      ignore_errors: yes 
+      
+    - 
+      name: Copy index.html to /var/www/html
+      shell: 'docker cp "templates/index.html" {{ container }}:"/var/www/html/index.html"'
+      become: yes
+      ignore_errors: yes
+    
+    -
+      name: start nginx service
+      shell: 'docker exec --privileged {{ container }} service nginx start'
+      become: yes
+      ignore_errors: yes
+
